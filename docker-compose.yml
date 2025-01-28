@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: chat-backend.Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    networks:
+      - chat-network
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=chat_app_user
+      - POSTGRES_PASSWORD=admin123
+      - POSTGRES_DB=chat_app_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - chat-network
+
+networks:
+  chat-network:
+    driver: bridge
+
+volumes:
+  postgres_data: 
