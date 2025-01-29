@@ -1,19 +1,32 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime
-from app.database import Base
+from app.database import Base, engine  # Import Base and engine from database.py
+import sys
+print(sys.path)
 
+from sqlalchemy import ForeignKey
+
+
+# Drop and recreate all tables
+Base.metadata.drop_all(bind=engine)
+Base.metadata.create_all(bind=engine)
+print("Database schema updated!")
+
+# ✅ SQLAlchemy ORM Models (For Database)
 class Message(Base):
     __tablename__ = "messages"
+
     id = Column(Integer, primary_key=True, index=True)
-    sender_id = Column(Integer)
-    receiver_id = Column(Integer)
-    content = Column(String)
+    content = Column(String, nullable=False)
     timestamp = Column(DateTime, default=datetime.utcnow)
 
 class Media(Base):
     __tablename__ = "media"
     id = Column(Integer, primary_key=True, index=True)
-    message_id = Column(Integer, ForeignKey("messages.id"))
-    file_url = Column(String)
-    file_type = Column(String)  # e.g., 'image' or 'video'
+    file_path = Column(String, nullable=False)  # Ensure file_path is defined
+    uploaded_at = Column(DateTime, default=datetime.utcnow)
+    file_type = Column(String, nullable=True)  # Optional field for file type
+    message_id = Column(Integer, nullable=True) # e.g., 'image' or 'video'
+
+# ✅ Initialize the database schema
+Base.metadata.create_all(bind=engine)
